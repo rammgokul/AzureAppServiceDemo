@@ -30,6 +30,6 @@ steps:
     deployToSlotOrASE: true
     ResourceGroupName: 'Demo-ARG-AppServiceDemo'
     SlotName: staging
-    DockerNamespace: 'https://$(ACRName)'
+    DockerNamespace: '$(ACRName)'
     DockerRepository: '$(ImageName)'
     DockerImageTag: '$(Build.BuildId)'
