@@ -1,0 +1,42 @@
+pool:
+  name: Azure Pipelines
+variables:
+  ImageName: 'insightappservice'
+
+steps:
+- task: Docker@1
+  displayName: login
+  inputs:
+    azureSubscriptionEndpoint: AzureSubscription
+    azureContainerRegistry: '{"loginServer":"insightdemocontainerregistry.azurecr.io", "id" : "/subscriptions/478f6ad2-a90a-4c08-ab44-4946858686ea/resourceGroups/Demo-ARG-AppServiceDemo/providers/Microsoft.ContainerRegistry/registries/insightdemocontainerregistry"}'
+    command: login
+  enabled: false
+
+- task: Docker@0
+  displayName: 'Build an image'
+  inputs:
+    azureSubscription: AzureSubscription
+    azureContainerRegistry: '{"loginServer":"insightdemocontainerregistry.azurecr.io", "id" : "/subscriptions/478f6ad2-a90a-4c08-ab44-4946858686ea/resourceGroups/Demo-ARG-AppServiceDemo/providers/Microsoft.ContainerRegistry/registries/insightdemocontainerregistry"}'
+    dockerFile: src/dockerfile
+    imageName: '$(ImageName):$(Build.BuildId)'
+
+- task: Docker@0
+  displayName: 'Push an image'
+  inputs:
+    azureSubscription: AzureSubscription
+    azureContainerRegistry: '{"loginServer":"insightdemocontainerregistry.azurecr.io", "id" : "/subscriptions/478f6ad2-a90a-4c08-ab44-4946858686ea/resourceGroups/Demo-ARG-AppServiceDemo/providers/Microsoft.ContainerRegistry/registries/insightdemocontainerregistry"}'
+    action: 'Push an image'
+    imageName: '$(ImageName):$(Build.BuildId)'
+
+- task: AzureRmWebAppDeployment@4
+  displayName: 'Deploy Image to Staging'
+  inputs:
+    azureSubscription: AzureSubscription
+    appType: webAppContainer
+    WebAppName: 'Demo-App-DemoApp'
+    deployToSlotOrASE: true
+    ResourceGroupName: 'Demo-ARG-AppServiceDemo'
+    SlotName: staging
+    DockerNamespace: 'https://insightdemocontainerregistry.azurecr.io'
+    DockerRepository: '$(ImageName)'
+    DockerImageTag: '$(Build.BuildId)'
