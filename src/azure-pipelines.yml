@@ -46,6 +46,7 @@ jobs:
           DockerNamespace: '$(ACRName)'
           DockerRepository: '$(ImageName)'
           DockerImageTag: '$(Build.BuildId)'
+        enabled: true
 
   - job: Production
     steps:
