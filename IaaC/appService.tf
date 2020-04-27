@@ -56,7 +56,9 @@ resource "azurerm_app_service" "dockerapp" {
   }
   lifecycle {
     ignore_changes = [
-      site_config.0.linux_fx_version, app_settings.DOCKER_CUSTOM_IMAGE_NAME, # deployments are made outside of Terraform
+      site_config.0.linux_fx_version,
+      app_settings.DOCKER_CUSTOM_IMAGE_NAME,
+      site_config.0.scm_type, # deployments are made outside of Terraform
     ]
   }
 
@@ -90,7 +92,9 @@ resource "azurerm_app_service_slot" "stagingSlot" {
   }
   lifecycle {
     ignore_changes = [
-      site_config.0.linux_fx_version, app_settings.DOCKER_CUSTOM_IMAGE_NAME, # deployments are made outside of Terraform
+      site_config.0.linux_fx_version, # deployments are made outside of Terraform
+      app_settings.DOCKER_CUSTOM_IMAGE_NAME,
+      site_config.0.scm_type,
     ]
   }
 }
