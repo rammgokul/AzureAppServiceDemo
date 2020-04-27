@@ -4,41 +4,56 @@ variables:
   ACRName: 'insightdemocontainerregistry.azurecr.io'
   ImageName: 'insightappservice'
 
-steps:
-- task: Docker@0
-  displayName: 'Build an image'
-  inputs:
-    azureSubscription: AzureSubscription
-    azureContainerRegistry: '$(ACRName)'
-    dockerFile: src/dockerfile
-    imageName: '$(ImageName):$(Build.BuildId)'
+jobs:
+  - job: Build
+    steps:
+    - task: Docker@0
+      displayName: 'Build an image'
+      inputs:
+        azureSubscription: AzureSubscription
+        azureContainerRegistry: '$(ACRName)'
+        dockerFile: src/dockerfile
+        imageName: '$(ImageName):$(Build.BuildId)'
 
-- task: Docker@0
-  displayName: 'Push an image'
-  inputs:
-    azureSubscription: AzureSubscription
-    azureContainerRegistry: '$(ACRName)'
-    action: 'Push an image'
-    imageName: '$(ImageName):$(Build.BuildId)'
+    - task: Docker@0
+      displayName: 'Push an image'
+      inputs:
+        azureSubscription: AzureSubscription
+        azureContainerRegistry: '$(ACRName)'
+        action: 'Push an image'
+        imageName: '$(ImageName):$(Build.BuildId)'
 
-- task: AzureRmWebAppDeployment@4
-  displayName: 'Deploy Image to Staging'
-  inputs:
-    azureSubscription: AzureSubscription
-    appType: webAppContainer
-    WebAppName: 'Demo-App-DemoApp'
-    deployToSlotOrASE: true
-    ResourceGroupName: 'Demo-ARG-AppServiceDemo'
-    SlotName: staging
-    DockerNamespace: '$(ACRName)'
-    DockerRepository: '$(ImageName)'
-    DockerImageTag: '$(Build.BuildId)'
+    - task: AzureAppServiceManage@0
+      displayName: 'Swap Slots: Demo-App-DemoApp'
+      inputs:
+        azureSubscription: 
+        WebAppName: 'Demo-App-DemoApp'
+        ResourceGroupName: 'Demo-ARG-AppServiceDemo'
+        SourceSlot: staging
+      enabled: false
 
-- task: AzureAppServiceManage@0
-  displayName: 'Swap Slots: Demo-App-DemoApp'
-  inputs:
-    azureSubscription: 
-    WebAppName: 'Demo-App-DemoApp'
-    ResourceGroupName: 'Demo-ARG-AppServiceDemo'
-    SourceSlot: staging
-  enabled: false
+  - job: Staging
+    steps:
+      - task: AzureRmWebAppDeployment@4
+        displayName: 'Deploy Image to Staging'
+        inputs:
+          azureSubscription: AzureSubscription
+          appType: webAppContainer
+          WebAppName: 'Demo-App-DemoApp'
+          deployToSlotOrASE: true
+          ResourceGroupName: 'Demo-ARG-AppServiceDemo'
+          SlotName: staging
+          DockerNamespace: '$(ACRName)'
+          DockerRepository: '$(ImageName)'
+          DockerImageTag: '$(Build.BuildId)'
+
+  - job: Production
+    steps:
+      - task: AzureAppServiceManage@0
+        displayName: 'Swap Slots: Demo-App-DemoApp'
+        inputs:
+          azureSubscription: 
+          WebAppName: 'Demo-App-DemoApp'
+          ResourceGroupName: 'Demo-ARG-AppServiceDemo'
+          SourceSlot: staging
+        enabled: false
