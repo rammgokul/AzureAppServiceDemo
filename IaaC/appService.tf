@@ -19,8 +19,8 @@
 # Create an App Service Plan with Linux
 resource "azurerm_app_service_plan" "appserviceplan" {
   name                = "${var.AppServiceName}-Plan"
-  location            = azurerm_resource_group.ResourceGroup.location
-  resource_group_name = azurerm_resource_group.ResourceGroup.name
+  location            = var.Location
+  resource_group_name = var.ResourceGroupName
 
   # Define Linux as Host OS
   kind     = "Linux"
@@ -36,8 +36,8 @@ resource "azurerm_app_service_plan" "appserviceplan" {
 # Create an Azure Web App for Containers in that App Service Plan
 resource "azurerm_app_service" "dockerapp" {
   name                = var.AppServiceName
-  location            = azurerm_resource_group.ResourceGroup.location
-  resource_group_name = azurerm_resource_group.ResourceGroup.name
+  location            = var.Location
+  resource_group_name = var.ResourceGroupName
   app_service_plan_id = azurerm_app_service_plan.appserviceplan.id
 
   # Do not attach Storage by default
@@ -46,6 +46,7 @@ resource "azurerm_app_service" "dockerapp" {
     DOCKER_REGISTRY_SERVER_URL          = "https://${azurerm_container_registry.acr.login_server}"
     DOCKER_REGISTRY_SERVER_USERNAME     = azurerm_container_registry.acr.admin_username
     DOCKER_REGISTRY_SERVER_PASSWORD     = azurerm_container_registry.acr.admin_password
+    DOCKER_CUSTOM_IMAGE_NAME            = ""
     WEBSITES_ENABLE_APP_SERVICE_STORAGE = false
     APPINSIGHTS_INSTRUMENTATIONKEY      = azurerm_application_insights.appInsight.instrumentation_key
   }
@@ -55,7 +56,7 @@ resource "azurerm_app_service" "dockerapp" {
   }
   lifecycle {
     ignore_changes = [
-      site_config.0.linux_fx_version, # deployments are made outside of Terraform
+      site_config.0.linux_fx_version, app_settings.DOCKER_CUSTOM_IMAGE_NAME, # deployments are made outside of Terraform
     ]
   }
 
@@ -69,8 +70,8 @@ resource "azurerm_app_service" "dockerapp" {
 resource "azurerm_app_service_slot" "stagingSlot" {
   name                = "staging"
   app_service_name    = azurerm_app_service.dockerapp.name
-  location            = azurerm_resource_group.ResourceGroup.location
-  resource_group_name = azurerm_resource_group.ResourceGroup.name
+  location            = var.Location
+  resource_group_name = var.ResourceGroupName
   app_service_plan_id = azurerm_app_service_plan.appserviceplan.id
 
   app_settings = {
@@ -79,6 +80,7 @@ resource "azurerm_app_service_slot" "stagingSlot" {
     DOCKER_REGISTRY_SERVER_USERNAME     = azurerm_container_registry.acr.admin_username
     DOCKER_REGISTRY_SERVER_PASSWORD     = azurerm_container_registry.acr.admin_password
     WEBSITES_ENABLE_APP_SERVICE_STORAGE = false
+    DOCKER_CUSTOM_IMAGE_NAME            = ""
     APPINSIGHTS_INSTRUMENTATIONKEY      = azurerm_application_insights.appInsight.instrumentation_key
   }
 
@@ -88,7 +90,7 @@ resource "azurerm_app_service_slot" "stagingSlot" {
   }
   lifecycle {
     ignore_changes = [
-      site_config.0.linux_fx_version, # deployments are made outside of Terraform
+      site_config.0.linux_fx_version, app_settings.DOCKER_CUSTOM_IMAGE_NAME, # deployments are made outside of Terraform
     ]
   }
 }

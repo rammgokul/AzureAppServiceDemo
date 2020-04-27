@@ -1,7 +1,7 @@
 resource "azurerm_application_insights" "appInsight" {
   name                = var.AppInsightName
-  location            = azurerm_resource_group.ResourceGroup.location
-  resource_group_name = azurerm_resource_group.ResourceGroup.name
+  location            = var.Location
+  resource_group_name = var.ResourceGroupName
   application_type    = "web"
 }
 
