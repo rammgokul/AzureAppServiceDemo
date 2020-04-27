@@ -1,8 +1,13 @@
 pool:
   name: Azure Pipelines
+  vmImage: 'ubuntu-latest'
+
 variables:
   ACRName: 'insightdemocontainerregistry.azurecr.io'
   ImageName: 'insightappservice'
+
+  trigger:
+    - master
 
 jobs:
   - job: Build
@@ -46,7 +51,6 @@ jobs:
           DockerNamespace: '$(ACRName)'
           DockerRepository: '$(ImageName)'
           DockerImageTag: '$(Build.BuildId)'
-        enabled: true
 
   - job: Production
     steps:
