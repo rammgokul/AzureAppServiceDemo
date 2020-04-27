@@ -33,3 +33,12 @@ steps:
     DockerNamespace: '$(ACRName)'
     DockerRepository: '$(ImageName)'
     DockerImageTag: '$(Build.BuildId)'
+
+- task: AzureAppServiceManage@0
+  displayName: 'Swap Slots: Demo-App-DemoApp'
+  inputs:
+    azureSubscription: 
+    WebAppName: 'Demo-App-DemoApp'
+    ResourceGroupName: 'Demo-ARG-AppServiceDemo'
+    SourceSlot: staging
+  enabled: false
