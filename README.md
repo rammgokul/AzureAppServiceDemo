@@ -11,5 +11,6 @@ Terraform based infrastructure to spin up the following:
 - Azure App Insight
 
 ## Src:
-An application created from the `dotnet new react -n Insight_demo`.
-A docker file created to bundle the app.
+The application source folder
+- An application created from the `dotnet new react -n Insight_demo`.
+- A docker file created to bundle the app.
