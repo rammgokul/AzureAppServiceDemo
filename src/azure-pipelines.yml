@@ -6,8 +6,8 @@ variables:
   ACRName: 'insightdemocontainerregistry.azurecr.io'
   ImageName: 'insightappservice'
 
-  trigger:
-    - master
+trigger:
+  - master
 
 stages:
   - stage: Build
