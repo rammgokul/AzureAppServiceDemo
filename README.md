@@ -2,7 +2,7 @@
 Azure App Service Demo from Microsoft DIY session by Ahmed Elsayed
 
 Build pipeline:
-[![Build Status](https://ahmedig.visualstudio.com/Insight%20Demo/_apis/build/status/ahmedig.AzureAppServiceDemo?branchName=master)](https://ahmedig.visualstudio.com/Insight%20Demo/_build/latest?definitionId=15&branchName=master)
+[![Build Status](https://dev.azure.com/AhmedIG/Insight%20Demo/_apis/build/status/ahmedig.AzureAppServiceDemo?branchName=master)](https://dev.azure.com/AhmedIG/Insight%20Demo/_build/latest?definitionId=15&branchName=master)
 
 ## IAAC:
 Terraform based infrastructure to spin up the following:
