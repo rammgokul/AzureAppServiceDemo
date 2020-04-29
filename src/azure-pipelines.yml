@@ -15,6 +15,7 @@ stages:
       vmImage: 'ubuntu-latest'
     jobs:
       - job:
+        displayName: Building the App
         steps:
           - task: Docker@0
             displayName: 'Build an image'
@@ -46,6 +47,7 @@ stages:
       vmImage: 'ubuntu-latest'
     jobs:
       - job:
+        displayName: Push to Staging Slot
         steps:
         - task: AzureRmWebAppDeployment@4
           displayName: 'Deploy Image to Staging'
@@ -65,6 +67,7 @@ stages:
       vmImage: 'ubuntu-latest'
     jobs:
       - job:
+        displayName: Swap Slots
         steps:
         - task: AzureAppServiceManage@0
           displayName: 'Swap Slots: Demo-App-DemoApp'
