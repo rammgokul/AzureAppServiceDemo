@@ -1,21 +1,3 @@
-# resource "azurerm_resource_group" "example" {
-#   name     = "example-resources"
-#   location = "westeurope"
-# }
-
-# module "web_app_container" {
-#   source = "innovationnorway/web-app-container/azurerm"
-
-#   name = "hello-world"
-
-#   resource_group_name = azurerm_resource_group.example.name
-
-#   container_type = "docker"
-
-#   container_image = "innovationnorway/go-hello-world:latest"
-# }
-
-
 # Create an App Service Plan with Linux
 resource "azurerm_app_service_plan" "appserviceplan" {
   name                = "${var.AppServiceName}-Plan"
@@ -40,7 +22,6 @@ resource "azurerm_app_service" "dockerapp" {
   resource_group_name = var.ResourceGroupName
   app_service_plan_id = azurerm_app_service_plan.appserviceplan.id
 
-  # Do not attach Storage by default
   app_settings = {
     WEBSITES_ENABLE_APP_SERVICE_STORAGE = false
     DOCKER_REGISTRY_SERVER_URL          = "https://${azurerm_container_registry.acr.login_server}"
@@ -54,6 +35,7 @@ resource "azurerm_app_service" "dockerapp" {
   site_config {
     linux_fx_version = "DOCKER|insightdemocontainerregistry.azurecr.io/insightappservice:95"
   }
+
   lifecycle {
     ignore_changes = [
       site_config.0.linux_fx_version,
@@ -62,12 +44,11 @@ resource "azurerm_app_service" "dockerapp" {
     ]
   }
 
-  # Configure Docker Image to load on start
-
   identity {
     type = "SystemAssigned"
   }
 }
+
 
 resource "azurerm_app_service_slot" "stagingSlot" {
   name                = "staging"
@@ -87,9 +68,9 @@ resource "azurerm_app_service_slot" "stagingSlot" {
   }
 
   site_config {
-    # ...
     linux_fx_version = "insightdemocontainerregistry.azurecr.io/insightappservice:95"
   }
+
   lifecycle {
     ignore_changes = [
       site_config.0.linux_fx_version, # deployments are made outside of Terraform
