@@ -20,7 +20,7 @@ stages:
           - task: Docker@0
             displayName: 'Build an image'
             inputs:
-              azureSubscription: AzureSubscription
+              azureSubscription: 'a78de714-8edc-42c9-b29e-88badae6370c'
               azureContainerRegistry: '$(ACRName)'
               dockerFile: src/dockerfile
               imageName: '$(ImageName):$(Build.BuildId)'
@@ -28,7 +28,7 @@ stages:
           - task: Docker@0
             displayName: 'Push an image'
             inputs:
-              azureSubscription: AzureSubscription
+              azureSubscription: 'a78de714-8edc-42c9-b29e-88badae6370c'
               azureContainerRegistry: '$(ACRName)'
               action: 'Push an image'
               imageName: '$(ImageName):$(Build.BuildId)'
@@ -52,7 +52,7 @@ stages:
         - task: AzureRmWebAppDeployment@4
           displayName: 'Deploy Image to Staging'
           inputs:
-            azureSubscription: AzureSubscription
+            azureSubscription: 'a78de714-8edc-42c9-b29e-88badae6370c'
             appType: webAppContainer
             WebAppName: 'Demo-App-DemoApp'
             deployToSlotOrASE: true
